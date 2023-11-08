@@ -5,6 +5,7 @@ export interface Update<State> {
 }
 
 export interface UpdateQueue<State> {
+	dispatch: any
 	shared: {
 		pending: Update<State> | null
 	}

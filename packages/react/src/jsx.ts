@@ -53,8 +53,10 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 	const maybeChildrenLength = maybeChildren.length
 	if (maybeChildrenLength) {
 		if (maybeChildrenLength === 1) {
+			//@ts-ignore
 			props.children = maybeChildren[0]
 		} else {
+			//@ts-ignore
 			props.children = maybeChildren
 		}
 	}

@@ -14,7 +14,7 @@ export default defineConfig({
 		})
 	],
 	resolve: {
-		alisa: [
+		alias: [
 			{
 				find: 'react',
 				replacement: resolvePKgPath('react')
