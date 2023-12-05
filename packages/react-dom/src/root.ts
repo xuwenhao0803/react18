@@ -12,7 +12,7 @@ export function createRoot(conatiner: Container) {
 
 	return {
 		render(element: ReactElementType) {
-			updateContainer(element, root)
+			return updateContainer(element, root)
 		}
 	}
 }

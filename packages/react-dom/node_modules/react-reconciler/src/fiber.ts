@@ -16,10 +16,11 @@ export class FiberNode {
 	ref: Ref
 	alternate: FiberNode | null
 	memoizedState: Props | null
-	mermoizedState: any
+	memoizedProps: Props | null
 	flags: Flags
 	subtreeFlags: Flags
 	updateQueue: unknown
+	deletions: FiberNode[] | null
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		this.tag = tag
 		this.key = key
@@ -35,12 +36,13 @@ export class FiberNode {
 		//做为工作单元
 		this.pendingProps = pendingProps
 		this.memoizedState = null
-		this.mermoizedState = null
+		this.memoizedProps = null
 		this.updateQueue = null
 		this.alternate = null
 		//副作用
 		this.flags = NoFlags
 		this.subtreeFlags = NoFlags
+		this.deletions = null
 	}
 }
 
@@ -72,12 +74,13 @@ export const createWorkInProgress = (
 		wip.pendingProps = pendingProps
 		wip.flags = NoFlags
 		wip.subtreeFlags = NoFlags
+		wip.deletions = null
 	}
 	wip.type = current.type
 	wip.updateQueue = current.updateQueue
 	wip.child = current.child
+	wip.memoizedProps = current.memoizedProps
 	wip.memoizedState = current.memoizedState
-	wip.mermoizedState = current.mermoizedState
 	return wip
 }
 

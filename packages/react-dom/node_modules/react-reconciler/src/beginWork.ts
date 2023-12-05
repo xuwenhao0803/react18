@@ -39,19 +39,20 @@ function updateFunctionConponent(wip: FiberNode) {
 }
 
 function updateHostRoot(wip: FiberNode) {
-	const baseState = wip.mermoizedState
+	const baseState = wip.memoizedState
 	const updateQueue = wip.updateQueue as UpdateQueue<Element>
 	const pending = updateQueue.shared.pending
 	updateQueue.shared.pending = null
 	const { memeizedState } = processUpdateQueue(baseState, pending)
-	wip.mermoizedState = memeizedState
-	const nextChildren = wip.mermoizedState
+	wip.memoizedState = memeizedState
+	const nextChildren = wip.memoizedState
 	reconcileChildren(wip, nextChildren)
 	return wip.child
 }
 
 function updateHostComponent(wip: FiberNode) {
 	const nextProps = wip.pendingProps
+
 	const nextChildren = nextProps.children
 	reconcileChildren(wip, nextChildren)
 	return wip.child
