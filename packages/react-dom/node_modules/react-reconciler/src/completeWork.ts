@@ -6,12 +6,14 @@ import {
 } from 'hostConfig'
 import { FiberNode } from './fiber'
 import {
+	Fragment,
 	FunctionComponent,
 	HostComponent,
 	HostRoot,
 	HostText
 } from './workTags'
 import { NoFlags, Update } from './fiberFlags'
+import { updateFiberProps } from 'react-dom/src/SyntheticEvent'
 
 function markUpdate(fiber: FiberNode) {
 	fiber.flags |= Update
@@ -25,6 +27,7 @@ export const completeWork = (wip: FiberNode) => {
 		case HostComponent:
 			if (current !== null && wip.stateNode) {
 				//update
+				updateFiberProps(wip.stateNode, newProps)
 			} else {
 				//1.构建DOM
 				//2.将Dom插入到Dom树中
@@ -49,9 +52,8 @@ export const completeWork = (wip: FiberNode) => {
 			bubbleProperties(wip)
 			return null
 		case HostRoot:
-			bubbleProperties(wip)
-			return null
 		case FunctionComponent:
+		case Fragment:
 			bubbleProperties(wip)
 			return null
 		default:
