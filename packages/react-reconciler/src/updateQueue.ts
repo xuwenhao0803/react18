@@ -48,18 +48,34 @@ export const enqueueUpdate = <State>(
 
 export const processUpdateQueue = <State>(
 	baseState: State,
-	pendingUpdate: Update<State> | null
+	pendingUpdate: Update<State> | null,
+	renderLane: Lane
 ): { memeizedState: State } => {
 	const result: ReturnType<typeof processUpdateQueue<State>> = {
 		memeizedState: baseState
 	}
 	if (pendingUpdate !== null) {
-		const action = pendingUpdate.action
-		if (action instanceof Function) {
-			result.memeizedState = action(baseState)
-		} else {
-			result.memeizedState = action
-		}
+		//第一个update
+		const first = pendingUpdate.next
+		let pending = pendingUpdate
+
+		do {
+			const updateLane = pending.lane
+			if (updateLane === renderLane) {
+				const action = pending.action
+				if (action instanceof Function) {
+					baseState = action(baseState)
+				} else {
+					baseState = action
+				}
+			} else {
+				if (__DEV__) {
+					console.warn('不应该进入')
+				}
+			}
+			pending = pending.next
+		} while (pending !== first)
 	}
+	result.memeizedState = baseState
 	return result
 }

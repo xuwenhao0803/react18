@@ -2,6 +2,8 @@ import { Props, Key, Ref, ReactElementType } from 'shared/ReactTypes'
 import { Fragment, FunctionComponent, HostComponent, WorkTag } from './workTags'
 import { NoFlags, Flags } from './fiberFlags'
 import { Container } from 'hostConfig'
+import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes'
+import { Effect } from './fiberHooks'
 
 export class FiberNode {
 	type: any
@@ -46,15 +48,28 @@ export class FiberNode {
 	}
 }
 
+export interface PendingPassiveEffects {
+	unmount: Effect[]
+	update: Effect[]
+}
 export class FiberRootNode {
 	container: Container
 	current: FiberNode
 	finishedWork: FiberNode | null
+	pendinglanes: Lanes
+	finishedlane: Lane
+	pendingPassiveEffects: PendingPassiveEffects
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container
 		this.current = hostRootFiber
 		hostRootFiber.stateNode = this
 		this.finishedWork = null
+		this.pendinglanes = NoLanes
+		this.finishedlane = NoLane
+		this.pendingPassiveEffects = {
+			unmount: [],
+			update: []
+		}
 	}
 }
 

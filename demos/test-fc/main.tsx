@@ -1,22 +1,43 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 
 function App() {
-	const [num, setNum] = useState(100)
-	const arr =
-		num % 2 === 0
-			? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
-			: [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>]
+	const [num, setNum] = useState(1)
+
+	useEffect(() => {
+		console.log('APP mount')
+	}, [])
+
+	useEffect(() => {
+		console.log('num change create', num)
+		return () => {
+			console.log('num change destory')
+		}
+	}, [num])
+
 	return (
-		<ul onClick={() => setNum(num + 1)}>
+		<ul
+			onClick={() => {
+				setNum(num + 1)
+				setNum(num + 1)
+				setNum(num + 1)
+			}}
+		>
 			<li>4</li>
 			<li>5</li>
-			{arr}
+			{num}
+			{num === 1 && <Child />}
 		</ul>
 	)
 }
 
 function Child() {
+	useEffect(() => {
+		console.log('child mount')
+		return () => {
+			console.log('child unmount')
+		}
+	}, [])
 	return <span>big-react</span>
 }
 const root = document.querySelector('#root')
