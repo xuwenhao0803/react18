@@ -242,7 +242,7 @@ function getHostSibling(fiber: FiberNode) {
 	let node: FiberNode = fiber
 	findSibling: while (true) {
 		while (node.sibling === null) {
-			const parent = node.parent || null
+			const parent = node.return || null
 			if (
 				parent === null ||
 				parent.tag === HostComponent ||
