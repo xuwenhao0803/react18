@@ -99,7 +99,16 @@ export const processUpdateQueue = <State>(
 			}
 			pending = pending.next
 		} while (pending !== first)
+		if (newBaseQueueLast === null) {
+			//本次计算没有update被跳过
+			newBaseState = newState
+		} else {
+			newBaseQueueLast.next = newBaseQueueFirst
+		}
+		result.memeizedState = newState
+		result.baseState = newBaseState
+		result.basQueue = newBaseQueueLast
 	}
-	result.memeizedState = baseState
+
 	return result
 }

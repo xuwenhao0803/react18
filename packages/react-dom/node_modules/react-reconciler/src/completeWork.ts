@@ -13,7 +13,11 @@ import {
 	HostRoot,
 	HostText
 } from './workTags'
-import { NoFlags, Update } from './fiberFlags'
+import { NoFlags, Ref, Update } from './fiberFlags'
+
+function markRef(fiber: FiberNode) {
+	fiber.flags != Ref
+}
 
 function markUpdate(fiber: FiberNode) {
 	fiber.flags |= Update
@@ -28,12 +32,18 @@ export const completeWork = (wip: FiberNode) => {
 			if (current !== null && wip.stateNode) {
 				//update
 				markUpdate(wip)
+				if (current.ref !== wip.ref) {
+					markRef(wip)
+				}
 			} else {
 				//1.构建DOM
 				//2.将Dom插入到Dom树中
 				const instance = createInstance(wip.type, newProps)
 				appendAllChildren(instance, wip)
 				wip.stateNode = instance
+				if (wip.ref !== null) {
+					markRef(wip)
+				}
 			}
 			bubbleProperties(wip)
 			return null
