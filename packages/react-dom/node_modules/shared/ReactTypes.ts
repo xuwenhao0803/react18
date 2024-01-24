@@ -25,3 +25,52 @@ export type ReactPropTypes<T> = {
 	$$typeof: symbol | number
 	_context: ReactContext<T> | null
 }
+
+export type Usable<T> = Thenable<T> | ReactContext<T>
+
+//untracked
+//pending
+//fulfilled->resolve
+//rejected->reject
+// export type Thenable
+export interface ThenableImpl<T, Result, Err> {
+	then(
+		onFulfilled: (value: T) => Result,
+		onRejected: (error: Err) => Result
+	): void | Weakable<Result>
+}
+
+export interface Weakable<Result> {
+	then(
+		onFulfilled: () => Result,
+		onRejected: () => Result
+	): void | Weakable<Result>
+}
+
+interface UntrackedThenable<T, Result, Err>
+	extends ThenableImpl<T, Result, Err> {
+	status?: void
+}
+
+export interface PendingThenable<T, Result, Err>
+	extends ThenableImpl<T, Result, Err> {
+	status: 'pending'
+}
+
+export interface FulfilledThenable<T, Result, Err>
+	extends ThenableImpl<T, Result, Err> {
+	status: 'fulfilled'
+	value: T
+}
+
+export interface RejectedThenable<T, Result, Err>
+	extends ThenableImpl<T, Result, Err> {
+	status: 'rejected'
+	reason: Err
+}
+
+export type Thenable<T, Result = void, Err = any> =
+	| UntrackedThenable<T, Result, Err>
+	| PendingThenable<T, Result, Err>
+	| FulfilledThenable<T, Result, Err>
+	| RejectedThenable<T, Result, Err>

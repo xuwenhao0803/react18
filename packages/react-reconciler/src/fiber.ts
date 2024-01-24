@@ -1,4 +1,4 @@
-import { Props, Key, Ref, ReactElementType } from 'shared/ReactTypes'
+import { Props, Key, Ref, ReactElementType, Weakable } from 'shared/ReactTypes'
 import {
 	ContextProvider,
 	Fragment,
@@ -77,12 +77,21 @@ export class FiberRootNode {
 
 	callbackNode: CallbackNode | null
 	callbackPriority: Lane
+
+	pingCache: WeakMap<Weakable<any>, Set<Lane>> | null
+
+	suspendedLanes: Lanes
+	pingLanes: Lanes
+
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container
 		this.current = hostRootFiber
 		hostRootFiber.stateNode = this
 		this.finishedWork = null
 		this.pendinglanes = NoLanes
+		this.suspendedLanes = NoLanes
+		this.pingLanes = NoLanes
+
 		this.finishedlane = NoLane
 
 		this.callbackNode = null
@@ -91,6 +100,7 @@ export class FiberRootNode {
 			unmount: [],
 			update: []
 		}
+		this.pingCache = null
 	}
 }
 
