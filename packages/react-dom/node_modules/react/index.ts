@@ -18,6 +18,8 @@ export const useState: Dispatcher['useState'] = (initialState) => {
 	return dispatcher.useState(initialState)
 }
 
+export { memo } from './src/memo'
+
 export const useEffect: Dispatcher['useEffect'] = (create, deps) => {
 	const dispatcher = resolveDispatcher()
 	return dispatcher.useEffect(create, deps)
@@ -41,6 +43,16 @@ export const useContext: Dispatcher['useContext'] = (context) => {
 export const use: Dispatcher['use'] = <T>(usable: Usable<T>) => {
 	const dispatcher = resolveDispatcher()
 	return dispatcher.use(usable)
+}
+
+export const useMemo: Dispatcher['useMemo'] = (nextCreate, deps) => {
+	const dispatcher = resolveDispatcher()
+	return dispatcher.useMemo(nextCreate, deps)
+}
+
+export const useCallback: Dispatcher['useCallback'] = (callback, deps) => {
+	const dispatcher = resolveDispatcher()
+	return dispatcher.useCallback(callback, deps)
 }
 
 //内部数据共享

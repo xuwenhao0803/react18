@@ -4,6 +4,7 @@ import {
 	Fragment,
 	FunctionComponent,
 	HostComponent,
+	MemoComponent,
 	OffscreenComponent,
 	SuspenseComponent,
 	WorkTag
@@ -13,7 +14,11 @@ import { Container } from 'hostConfig'
 import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes'
 import { Effect } from './fiberHooks'
 import { CallbackNode } from 'scheduler'
-import { REACT_PROVIDER_TYPE, REACT_SUPENSE_TYPE } from 'shared/ReactSymbols'
+import {
+	REACT_MEMO_TYPE,
+	REACT_PROVIDER_TYPE,
+	REACT_SUPENSE_TYPE
+} from 'shared/ReactSymbols'
 
 export interface OffscreenProps {
 	mode: 'visible' | 'hidden'
@@ -38,6 +43,8 @@ export class FiberNode {
 	subtreeFlags: Flags
 	updateQueue: unknown
 	deletions: FiberNode[] | null
+	lanes: Lanes
+	childLanes: Lane
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		this.tag = tag
 		this.key = key || null
@@ -60,6 +67,8 @@ export class FiberNode {
 		this.flags = NoFlags
 		this.subtreeFlags = NoFlags
 		this.deletions = null
+		this.lanes = NoLanes
+		this.childLanes = NoLanes
 	}
 }
 
@@ -128,6 +137,10 @@ export const createWorkInProgress = (
 	wip.memoizedProps = current.memoizedProps
 	wip.memoizedState = current.memoizedState
 	wip.ref = current.ref
+
+	wip.lanes = current.lanes
+	wip.childLanes = current.childLanes
+
 	return wip
 }
 
@@ -137,11 +150,18 @@ export function createFiberFromElement(element: ReactElementType): FiberNode {
 	let fiberTag: WorkTag = FunctionComponent
 	if (typeof type === 'string') {
 		fiberTag = HostComponent
-	} else if (
-		typeof type === 'object' &&
-		type.$$typeof === REACT_PROVIDER_TYPE
-	) {
-		fiberTag = ContextProvider
+	} else if (typeof type === 'object') {
+		switch (type.$$typeof) {
+			case REACT_PROVIDER_TYPE:
+				fiberTag = ContextProvider
+				break
+			case REACT_MEMO_TYPE:
+				fiberTag = MemoComponent
+				break
+			default:
+				console.warn('未定义type类型')
+				break
+		}
 	} else if (type === REACT_SUPENSE_TYPE) {
 		fiberTag = SuspenseComponent
 	} else if (typeof type !== 'function' && __DEV__) {

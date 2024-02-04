@@ -18,3 +18,5 @@ export const REACT_PROVIDER_TYPE = supportSymbol
 export const REACT_SUPENSE_TYPE = supportSymbol
 	? Symbol.for('react.supense')
 	: 0xeac3
+
+export const REACT_MEMO_TYPE = supportSymbol ? Symbol.for('react.memo') : 0xeac4
