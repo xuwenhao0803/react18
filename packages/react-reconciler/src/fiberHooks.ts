@@ -26,6 +26,7 @@ import { HookHasEffect, Passive } from './hookEffectTags'
 import { REACT_CONTEXT_TYPE } from 'shared/ReactSymbols'
 import { trackUsedThenable } from './thenable'
 import { markWipReceivedUpdate } from './beginWork'
+import { readContext as readContextOrigin } from './fiberContext'
 
 let currentlyRenderingFiber: FiberNode | null = null
 
@@ -33,6 +34,11 @@ const { currentDispatcher } = internals
 let workInProgressHook: Hook | null = null
 let currentHook: Hook | null = null
 let renderLane: Lane = NoLane
+
+function readContext<Value>(context: ReactContext<Value>): Value {
+	const consumer = currentlyRenderingFiber as FiberNode
+	return readContextOrigin(consumer, context)
+}
 
 interface Hook {
 	memoizedState: any
@@ -404,15 +410,6 @@ function mountWorkInProgressHook(): Hook {
 		workInProgressHook = hook
 	}
 	return workInProgressHook
-}
-
-function readContext<T>(context: ReactContext<T>): T {
-	const consumer = currentlyRenderingFiber
-	if (consumer === null) {
-		throw new Error('只能在函数组件中调用useContext')
-	}
-	const value = context._currentValue
-	return value
 }
 
 function use<T>(usable: Usable<T>): T {
